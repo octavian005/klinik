@@ -58,7 +58,6 @@ class JadwalDokterBase(BaseModel):
     hari: str
     jam_mulai: time
     jam_selesai: time
-    status: Optional[str] = "Aktif"
 
 
 class JadwalDokterCreate(JadwalDokterBase):

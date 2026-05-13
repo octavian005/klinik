@@ -72,13 +72,29 @@ def init_jadwal_dokter():
     db: Session = SessionLocal()
 
     try:
-        jadwal_list = [
-            {"id_dokter": 1, "hari": "Senin", "jam_mulai": "08:00:00", "jam_selesai": "10:00:00", "status": "Aktif"},
-            {"id_dokter": 2, "hari": "Selasa", "jam_mulai": "10:00:00", "jam_selesai": "12:00:00", "status": "Aktif"},
-            {"id_dokter": 3, "hari": "Rabu", "jam_mulai": "08:00:00", "jam_selesai": "10:00:00", "status": "Aktif"},
-            {"id_dokter": 4, "hari": "Kamis", "jam_mulai": "13:00:00", "jam_selesai": "15:00:00", "status": "Aktif"},
-            {"id_dokter": 5, "hari": "Jumat", "jam_mulai": "09:00:00", "jam_selesai": "11:00:00", "status": "Aktif"},
+        hari_list = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"]
+
+        shift_list = [
+            {"jam_mulai": "08:00:00", "jam_selesai": "10:00:00"},
+            {"jam_mulai": "10:00:00", "jam_selesai": "12:00:00"},
+            {"jam_mulai": "13:00:00", "jam_selesai": "15:00:00"},
+            {"jam_mulai": "15:00:00", "jam_selesai": "17:00:00"},
+            {"jam_mulai": "18:00:00", "jam_selesai": "20:00:00"},
         ]
+
+        jadwal_list = []
+
+        for id_dokter in range(1, 6):
+            for index_hari, hari in enumerate(hari_list):
+                index_shift = (index_hari + id_dokter - 1) % len(shift_list)
+                shift = shift_list[index_shift]
+
+                jadwal_list.append({
+                    "id_dokter": id_dokter,
+                    "hari": hari,
+                    "jam_mulai": shift["jam_mulai"],
+                    "jam_selesai": shift["jam_selesai"]
+                })
 
         for jadwal in jadwal_list:
             cek = db.query(models.JadwalDokter).filter(
@@ -90,7 +106,7 @@ def init_jadwal_dokter():
                 db.add(models.JadwalDokter(**jadwal))
 
         db.commit()
-        print("Data jadwal dokter berhasil ditambahkan/dicek")
+        print("Data jadwal dokter rolling berhasil ditambahkan/dicek")
 
     except Exception as e:
         db.rollback()
@@ -236,6 +252,11 @@ def get_all_jadwal_dokter(db: Session = Depends(get_db)):
 @app.get("/dokter/{id_dokter}/jadwal", response_model=List[schemas.JadwalDokterResponse])
 def get_jadwal_by_dokter(id_dokter: int, db: Session = Depends(get_db)):
     return crud.get_jadwal_by_dokter(db, id_dokter)
+    
+
+@app.get("/jadwal-dokter/hari/{hari}", response_model=List[schemas.JadwalDokterResponse])
+def get_jadwal_by_hari(hari: str, db: Session = Depends(get_db)):
+    return crud.get_jadwal_by_hari(db, hari)
 
 
 # =========================
@@ -272,6 +293,10 @@ def update_status_pendaftaran(
         "message": "Status pendaftaran berhasil diubah",
         "status": pendaftaran.status
     }
+
+@app.get("/pendaftaran", response_model=List[schemas.PendaftaranResponse])
+def get_all_pendaftaran(db: Session = Depends(get_db)):
+    return crud.get_all_pendaftaran(db)
 
 
 # =========================

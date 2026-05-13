@@ -34,7 +34,6 @@ class JadwalDokter(Base):
     hari = Column(String(20), nullable=False)
     jam_mulai = Column(Time, nullable=False)
     jam_selesai = Column(Time, nullable=False)
-    status = Column(String(20), default="Aktif")
 
     dokter = relationship("Dokter", back_populates="jadwal_dokter")
     pendaftaran = relationship("Pendaftaran", back_populates="jadwal_dokter")

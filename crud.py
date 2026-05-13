@@ -145,6 +145,12 @@ def get_jadwal_by_dokter(db: Session, id_dokter: int):
 
 def get_all_jadwal_dokter(db: Session):
     return db.query(models.JadwalDokter).all()
+    
+
+def get_jadwal_by_hari(db: Session, hari: str):
+    return db.query(models.JadwalDokter).filter(
+        models.JadwalDokter.hari == hari
+    ).all()
 
 
 # =========================
@@ -193,6 +199,9 @@ def update_status_pendaftaran(db: Session, id_pendaftaran: int, status: str):
         db.refresh(db_pendaftaran)
 
     return db_pendaftaran
+
+def get_all_pendaftaran(db: Session):
+    return db.query(models.Pendaftaran).all()
 
 
 # =========================
