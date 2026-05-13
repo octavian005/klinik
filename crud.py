@@ -13,6 +13,7 @@ import schemas
 def registrasi_pasien(db: Session, pasien: schemas.PasienCreate):
     db_pasien = models.Pasien(
         nama_pasien=pasien.nama_pasien,
+        email=pasien.email,
         password=pasien.password,
         no_telp=pasien.no_telp,
         alamat=pasien.alamat
@@ -88,9 +89,9 @@ def delete_pasien(db: Session, id_pasien: int):
     return db_pasien
 
 
-def login_pasien(db: Session, nama_pasien: str, password: str):
+def login_pasien(db: Session, email: str, password: str):
     return db.query(models.Pasien).filter(
-        models.Pasien.nama_pasien == nama_pasien,
+        models.Pasien.email == email,
         models.Pasien.password == password
     ).first()
 
@@ -104,27 +105,6 @@ def get_pasien_by_id(db: Session, id_pasien: int):
 # =========================
 # DOKTER
 # =========================
-
-def create_dokter(db: Session, dokter: schemas.DokterCreate):
-    db_dokter = models.Dokter(
-        nama_dokter=dokter.nama_dokter,
-        spesialis=dokter.spesialis,
-        password=dokter.password
-    )
-
-    db.add(db_dokter)
-    db.commit()
-    db.refresh(db_dokter)
-
-    return db_dokter
-
-
-def login_dokter(db: Session, nama_dokter: str, password: str):
-    return db.query(models.Dokter).filter(
-        models.Dokter.nama_dokter == nama_dokter,
-        models.Dokter.password == password
-    ).first()
-
 
 def get_all_dokter(db: Session):
     return db.query(models.Dokter).all()
@@ -356,3 +336,13 @@ def get_detail_resep_by_rekam_medis(db: Session, id_rekam_medis: int):
     return db.query(models.DetailResep).filter(
         models.DetailResep.id_rekam_medis == id_rekam_medis
     ).all()
+
+# =========================
+# ADMIN
+# =========================
+
+def login_admin(db: Session, email: str, password: str):
+    return db.query(models.Admin).filter(
+        models.Admin.email == email,
+        models.Admin.password == password
+    ).first()

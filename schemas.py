@@ -9,6 +9,7 @@ from typing import Optional
 
 class PasienBase(BaseModel):
     nama_pasien: str
+    email: str
     no_telp: Optional[str] = None
     alamat: Optional[str] = None
 
@@ -26,6 +27,7 @@ class PasienResponse(PasienBase):
 
 class PasienUpdate(BaseModel):
     nama_pasien: Optional[str] = None
+    email: Optional[str] = None
     password: Optional[str] = None
     no_telp: Optional[str] = None
     alamat: Optional[str] = None
@@ -38,10 +40,6 @@ class PasienUpdate(BaseModel):
 class DokterBase(BaseModel):
     nama_dokter: str
     spesialis: str
-
-
-class DokterCreate(DokterBase):
-    password: str
 
 
 class DokterResponse(DokterBase):
@@ -166,6 +164,24 @@ class DetailResepCreate(DetailResepBase):
 
 class DetailResepResponse(DetailResepBase):
     id_detail_resep: int
+
+    class Config:
+        from_attributes = True
+
+# =====================
+# ADMIN
+# =====================
+
+class AdminBase(BaseModel):
+    email: str
+
+
+class AdminCreate(AdminBase):
+    password: str
+
+
+class AdminResponse(AdminBase):
+    id_admin: int
 
     class Config:
         from_attributes = True

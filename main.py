@@ -11,17 +11,42 @@ from database import engine, get_db, SessionLocal
 
 models.Base.metadata.create_all(bind=engine)
 
+def init_admin():
+    db: Session = SessionLocal()
+
+    try:
+        cek_admin = db.query(models.Admin).filter(
+            models.Admin.email == "admin@gmail.com"
+        ).first()
+
+        if not cek_admin:
+            admin = models.Admin(
+                email="admin@gmail.com",
+                password="admin123"
+            )
+
+            db.add(admin)
+            db.commit()
+
+            print("Admin berhasil ditambahkan")
+
+    except Exception as e:
+        db.rollback()
+        print("ERROR INIT ADMIN:", e)
+
+    finally:
+        db.close()
 
 def init_dokter():
     db: Session = SessionLocal()
 
     try:
         dokter_list = [
-            {"nama_dokter": "Dr. Dzikri", "spesialis": "Dokter Umum", "password": "dzikri123"},
-            {"nama_dokter": "Dr. Faiz", "spesialis": "Dokter Gigi", "password": "faiz123"},
-            {"nama_dokter": "Dr. Octavian", "spesialis": "Dokter Anak", "password": "octavian123"},
-            {"nama_dokter": "Dr. Naila", "spesialis": "Dokter Kulit", "password": "naila123"},
-            {"nama_dokter": "Dr. Hassyifa", "spesialis": "Dokter THT", "password": "hassyifa123"},
+            {"nama_dokter": "Dr. Dzikri", "spesialis": "Dokter Umum"},
+            {"nama_dokter": "Dr. Faiz", "spesialis": "Dokter Gigi"},
+            {"nama_dokter": "Dr. Octavian", "spesialis": "Dokter Anak"},
+            {"nama_dokter": "Dr. Naila", "spesialis": "Dokter Kulit"},
+            {"nama_dokter": "Dr. Hassyifa", "spesialis": "Dokter THT"},
         ]
 
         for dokter in dokter_list:
@@ -109,7 +134,7 @@ def init_obat():
     finally:
         db.close()
 
-
+init_admin()
 init_dokter()
 init_jadwal_dokter()
 init_obat()
@@ -126,16 +151,17 @@ def register_pasien(pasien: schemas.PasienCreate, db: Session = Depends(get_db))
 
 
 @app.post("/pasien/login")
-def login_pasien(nama_pasien: str, password: str, db: Session = Depends(get_db)):
-    pasien = crud.login_pasien(db, nama_pasien, password)
+def login_pasien(email: str, password: str, db: Session = Depends(get_db)):
+    pasien = crud.login_pasien(db, email, password)
 
     if not pasien:
-        raise HTTPException(status_code=404, detail="Nama atau password pasien salah")
+        raise HTTPException(status_code=404, detail="Email atau password pasien salah")
 
     return {
         "message": "Login pasien berhasil",
         "id_pasien": pasien.id_pasien,
-        "nama_pasien": pasien.nama_pasien
+        "nama_pasien": pasien.nama_pasien,
+        "email": pasien.email
     }
 
 @app.delete("/pasien/{id_pasien}")
@@ -177,26 +203,6 @@ def update_pasien(
 # =========================
 # DOKTER
 # =========================
-
-@app.post("/dokter", response_model=schemas.DokterResponse)
-def create_dokter(dokter: schemas.DokterCreate, db: Session = Depends(get_db)):
-    return crud.create_dokter(db, dokter)
-
-
-@app.post("/dokter/login")
-def login_dokter(nama_dokter: str, password: str, db: Session = Depends(get_db)):
-    dokter = crud.login_dokter(db, nama_dokter, password)
-
-    if not dokter:
-        raise HTTPException(status_code=404, detail="Nama atau password dokter salah")
-
-    return {
-        "message": "Login dokter berhasil",
-        "id_dokter": dokter.id_dokter,
-        "nama_dokter": dokter.nama_dokter,
-        "spesialis": dokter.spesialis
-    }
-
 
 @app.get("/dokter", response_model=List[schemas.DokterResponse])
 def get_all_dokter(db: Session = Depends(get_db)):
@@ -359,3 +365,17 @@ def create_detail_resep(detail: schemas.DetailResepCreate, db: Session = Depends
 @app.get("/rekam-medis/{id_rekam_medis}/detail-resep", response_model=List[schemas.DetailResepResponse])
 def get_detail_resep(id_rekam_medis: int, db: Session = Depends(get_db)):
     return crud.get_detail_resep_by_rekam_medis(db, id_rekam_medis)
+
+@app.post("/admin/login")
+def login_admin(email: str, password: str, db: Session = Depends(get_db)):
+    admin = crud.login_admin(db, email, password)
+
+    if not admin:
+        raise HTTPException(status_code=404, detail="Email atau password admin salah")
+
+    return {
+        "message": "Login admin berhasil",
+        "role": "admin",
+        "id_admin": admin.id_admin,
+        "email": admin.email
+    }
