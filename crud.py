@@ -383,3 +383,22 @@ def login_admin(db: Session, email: str, password: str):
         models.Admin.email == email,
         models.Admin.password == password
     ).first()
+
+def get_daftar_antrean_admin(db: Session):
+    data = db.query(models.Pendaftaran).join(models.Pasien).join(models.Dokter).filter(
+        models.Pendaftaran.status == "Menunggu"
+    ).order_by(models.Pendaftaran.nomor_antrean.asc()).all()
+
+    hasil = []
+
+    for item in data:
+        hasil.append({
+            "id_pendaftaran": item.id_pendaftaran,
+            "nama_pasien": item.pasien.nama_pasien,
+            "nama_dokter": item.dokter.nama_dokter,
+            "spesialis": item.dokter.spesialis,
+            "nomor_antrean": item.nomor_antrean,
+            "status": item.status
+        })
+
+    return hasil

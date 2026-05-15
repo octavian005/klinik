@@ -196,3 +196,14 @@ class AdminResponse(AdminBase):
 
     class Config:
         from_attributes = True
+
+class AdminAntreanResponse(BaseModel):
+    id_pendaftaran: int
+    nama_pasien: str
+    nama_dokter: str
+    spesialis: str
+    nomor_antrean: int
+    status: str
+
+    class Config:
+        from_attributes = True

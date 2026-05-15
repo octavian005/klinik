@@ -418,3 +418,8 @@ def login_admin(email: str, password: str, db: Session = Depends(get_db)):
         "id_admin": admin.id_admin,
         "email": admin.email
     }
+
+#ADMIN
+@app.get("/admin/daftar-antrean", response_model=List[schemas.AdminAntreanResponse])
+def get_daftar_antrean_admin(db: Session = Depends(get_db)):
+    return crud.get_daftar_antrean_admin(db)
