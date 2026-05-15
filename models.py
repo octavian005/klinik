@@ -65,11 +65,12 @@ class RekamMedis(Base):
     id_pendaftaran = Column(Integer, ForeignKey("pendaftaran.id_pendaftaran"), nullable=False)
 
     diagnosa = Column(Text, nullable=False)
+    kode_icd = Column(String(20))
+    catatan = Column(Text)
     tanggal_pemeriksaan = Column(Date, nullable=False)
 
     pendaftaran = relationship("Pendaftaran", back_populates="rekam_medis")
     detail_resep = relationship("DetailResep", back_populates="rekam_medis")
-
 
 class Obat(Base):
     __tablename__ = "obat"

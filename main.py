@@ -193,14 +193,9 @@ def delete_pasien(id_pasien: int, db: Session = Depends(get_db)):
     }
 
 
-@app.get("/pasien/{id_pasien}", response_model=schemas.PasienResponse)
-def get_pasien(id_pasien: int, db: Session = Depends(get_db)):
-    pasien = crud.get_pasien_by_id(db, id_pasien)
-
-    if not pasien:
-        raise HTTPException(status_code=404, detail="Pasien tidak ditemukan")
-
-    return pasien
+@app.get("/pasien/{id_pasien}/riwayat-rekam-medis", response_model=List[schemas.RiwayatPasienResponse])
+def get_riwayat_rekam_medis_pasien(id_pasien: int, db: Session = Depends(get_db)):
+    return crud.get_riwayat_rekam_medis_by_pasien(db, id_pasien)
 
 @app.put("/pasien/{id_pasien}", response_model=schemas.PasienResponse)
 def update_pasien(
@@ -321,6 +316,9 @@ def get_antrean_aktif_pasien(id_pasien: int, db: Session = Depends(get_db)):
 def create_rekam_medis(rekam: schemas.RekamMedisCreate, db: Session = Depends(get_db)):
     return crud.create_rekam_medis(db, rekam)
 
+@app.get("/pasien/{id_pasien}/riwayat-rekam-medis", response_model=List[schemas.RekamMedisResponse])
+def get_riwayat_rekam_medis_pasien(id_pasien: int, db: Session = Depends(get_db)):
+    return crud.get_riwayat_rekam_medis_by_pasien(db, id_pasien)
 
 @app.get("/pasien/{id_pasien}/rekam-medis", response_model=List[schemas.RekamMedisResponse])
 def get_riwayat_rekam_medis(id_pasien: int, db: Session = Depends(get_db)):
@@ -401,7 +399,7 @@ def create_detail_resep(detail: schemas.DetailResepCreate, db: Session = Depends
     return crud.create_detail_resep(db, detail)
 
 
-@app.get("/rekam-medis/{id_rekam_medis}/detail-resep", response_model=List[schemas.DetailResepResponse])
+@app.get("/rekam-medis/{id_rekam_medis}/detail-resep", response_model=List[schemas.DetailResepObatResponse])
 def get_detail_resep(id_rekam_medis: int, db: Session = Depends(get_db)):
     return crud.get_detail_resep_by_rekam_medis(db, id_rekam_medis)
 
@@ -423,3 +421,7 @@ def login_admin(email: str, password: str, db: Session = Depends(get_db)):
 @app.get("/admin/daftar-antrean", response_model=List[schemas.AdminAntreanResponse])
 def get_daftar_antrean_admin(db: Session = Depends(get_db)):
     return crud.get_daftar_antrean_admin(db)
+
+@app.post("/obat/get-or-create", response_model=schemas.ObatResponse)
+def get_or_create_obat(obat: schemas.ObatCreate, db: Session = Depends(get_db)):
+    return crud.get_or_create_obat(db, obat)

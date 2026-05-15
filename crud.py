@@ -236,22 +236,16 @@ def get_antrean_aktif_by_pasien(db: Session, id_pasien: int):
 # REKAM MEDIS
 # =========================
 
-def create_rekam_medis(db: Session, rekam: schemas.RekamMedisCreate):
+def create_rekam_medis(db: Session, rekam_medis: schemas.RekamMedisCreate):
     db_rekam = models.RekamMedis(
-        id_pendaftaran=rekam.id_pendaftaran,
-        diagnosa=rekam.diagnosa,
-        tanggal_pemeriksaan=rekam.tanggal_pemeriksaan
+        id_pendaftaran=rekam_medis.id_pendaftaran,
+        diagnosa=rekam_medis.diagnosa,
+        kode_icd=rekam_medis.kode_icd,
+        catatan=rekam_medis.catatan,
+        tanggal_pemeriksaan=rekam_medis.tanggal_pemeriksaan
     )
 
     db.add(db_rekam)
-
-    db_pendaftaran = db.query(models.Pendaftaran).filter(
-        models.Pendaftaran.id_pendaftaran == rekam.id_pendaftaran
-    ).first()
-
-    if db_pendaftaran:
-        db_pendaftaran.status = "Selesai"
-
     db.commit()
     db.refresh(db_rekam)
 
@@ -259,9 +253,25 @@ def create_rekam_medis(db: Session, rekam: schemas.RekamMedisCreate):
 
 
 def get_riwayat_rekam_medis_by_pasien(db: Session, id_pasien: int):
-    return db.query(models.RekamMedis).join(models.Pendaftaran).filter(
+    data = db.query(models.RekamMedis).join(models.Pendaftaran).join(models.Dokter).filter(
         models.Pendaftaran.id_pasien == id_pasien
     ).all()
+
+    hasil = []
+
+    for item in data:
+        hasil.append({
+            "id_rekam_medis": item.id_rekam_medis,
+            "id_pendaftaran": item.id_pendaftaran,
+            "diagnosa": item.diagnosa,
+            "kode_icd": item.kode_icd,
+            "catatan": item.catatan,
+            "tanggal_pemeriksaan": item.tanggal_pemeriksaan,
+            "nama_dokter": item.pendaftaran.dokter.nama_dokter,
+            "spesialis": item.pendaftaran.dokter.spesialis
+        })
+
+    return hasil
 
 
 def get_rekam_medis_by_id(db: Session, id_rekam_medis: int):
@@ -370,9 +380,26 @@ def create_detail_resep(db: Session, detail: schemas.DetailResepCreate):
 
 
 def get_detail_resep_by_rekam_medis(db: Session, id_rekam_medis: int):
-    return db.query(models.DetailResep).filter(
+    data = db.query(models.DetailResep).join(models.Obat).filter(
         models.DetailResep.id_rekam_medis == id_rekam_medis
     ).all()
+
+    hasil = []
+
+    for item in data:
+        hasil.append({
+            "id_detail_resep": item.id_detail_resep,
+            "id_rekam_medis": item.id_rekam_medis,
+            "id_obat": item.id_obat,
+            "nama_obat": item.obat.nama_obat,
+            "jenis_obat": item.obat.jenis_obat,
+            "dosis": item.dosis,
+            "aturan_pakai": item.aturan_pakai,
+            "jumlah": item.jumlah,
+            "keterangan": item.keterangan
+        })
+
+    return hasil
 
 # =========================
 # ADMIN
@@ -402,3 +429,25 @@ def get_daftar_antrean_admin(db: Session):
         })
 
     return hasil
+
+
+def get_or_create_obat(db: Session, obat: schemas.ObatCreate):
+    db_obat = db.query(models.Obat).filter(
+        models.Obat.nama_obat == obat.nama_obat,
+        models.Obat.jenis_obat == obat.jenis_obat
+    ).first()
+
+    if db_obat:
+        return db_obat
+
+    db_obat = models.Obat(
+        nama_obat=obat.nama_obat,
+        jenis_obat=obat.jenis_obat,
+        stok=obat.stok
+    )
+
+    db.add(db_obat)
+    db.commit()
+    db.refresh(db_obat)
+
+    return db_obat

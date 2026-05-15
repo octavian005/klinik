@@ -115,6 +115,8 @@ class PendaftaranResponse(PendaftaranBase):
 class RekamMedisBase(BaseModel):
     id_pendaftaran: int
     diagnosa: str
+    kode_icd: Optional[str] = None
+    catatan: Optional[str] = None
     tanggal_pemeriksaan: date
 
 
@@ -204,6 +206,50 @@ class AdminAntreanResponse(BaseModel):
     spesialis: str
     nomor_antrean: int
     status: str
+
+    class Config:
+        from_attributes = True
+
+#RIWAYAT
+class RiwayatPasienResponse(BaseModel):
+    id_rekam_medis: int
+    id_pendaftaran: int
+    diagnosa: str
+    kode_icd: Optional[str] = None
+    catatan: Optional[str] = None
+    tanggal_pemeriksaan: date
+    nama_dokter: str
+    spesialis: str
+
+    class Config:
+        from_attributes = True
+
+
+class ObatCreate(BaseModel):
+    nama_obat: str
+    jenis_obat: str
+    stok: int = 100
+
+
+class ObatResponse(BaseModel):
+    id_obat: int
+    nama_obat: str
+    jenis_obat: str
+    stok: int
+
+    class Config:
+        from_attributes = True
+
+class DetailResepObatResponse(BaseModel):
+    id_detail_resep: int
+    id_rekam_medis: int
+    id_obat: int
+    nama_obat: str
+    jenis_obat: str
+    dosis: str
+    aturan_pakai: str
+    jumlah: int
+    keterangan: Optional[str] = None
 
     class Config:
         from_attributes = True
