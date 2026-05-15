@@ -169,13 +169,21 @@ def get_jadwal_dokter_by_hari(db: Session, hari: str):
 # =========================
 
 def buat_pendaftaran(db: Session, pendaftaran: schemas.PendaftaranCreate):
+    jumlah_antrean = db.query(models.Pendaftaran).filter(
+        models.Pendaftaran.id_dokter == pendaftaran.id_dokter,
+        models.Pendaftaran.id_jadwal == pendaftaran.id_jadwal,
+        models.Pendaftaran.tanggal == pendaftaran.tanggal
+    ).count()
+
+    nomor_baru = jumlah_antrean + 1
+
     db_pendaftaran = models.Pendaftaran(
         id_pasien=pendaftaran.id_pasien,
         id_dokter=pendaftaran.id_dokter,
         id_jadwal=pendaftaran.id_jadwal,
         tanggal=pendaftaran.tanggal,
         keluhan=pendaftaran.keluhan,
-        nomor_antrean=pendaftaran.nomor_antrean,
+        nomor_antrean=nomor_baru,
         status=pendaftaran.status
     )
 
@@ -213,6 +221,15 @@ def update_status_pendaftaran(db: Session, id_pendaftaran: int, status: str):
 
 def get_all_pendaftaran(db: Session):
     return db.query(models.Pendaftaran).all()
+
+
+# ANTREAN AKTIF
+
+def get_antrean_aktif_by_pasien(db: Session, id_pasien: int):
+    return db.query(models.Pendaftaran).filter(
+        models.Pendaftaran.id_pasien == id_pasien,
+        models.Pendaftaran.status == "Menunggu"
+    ).order_by(models.Pendaftaran.id_pendaftaran.desc()).first()
 
 
 # =========================

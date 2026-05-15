@@ -93,7 +93,6 @@ class PendaftaranBase(BaseModel):
     id_jadwal: int
     tanggal: date
     keluhan: str
-    nomor_antrean: int
     status: Optional[str] = "Menunggu"
 
 
@@ -103,6 +102,7 @@ class PendaftaranCreate(PendaftaranBase):
 
 class PendaftaranResponse(PendaftaranBase):
     id_pendaftaran: int
+    nomor_antrean: int
 
     class Config:
         from_attributes = True

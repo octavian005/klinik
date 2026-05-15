@@ -301,6 +301,17 @@ def update_status_pendaftaran(
 def get_all_pendaftaran(db: Session = Depends(get_db)):
     return crud.get_all_pendaftaran(db)
 
+# ANTREAN AKTIF
+
+@app.get("/pasien/{id_pasien}/antrean-aktif", response_model=schemas.PendaftaranResponse)
+def get_antrean_aktif_pasien(id_pasien: int, db: Session = Depends(get_db)):
+    data = crud.get_antrean_aktif_by_pasien(db, id_pasien)
+
+    if not data:
+        raise HTTPException(status_code=404, detail="Belum ada antrean aktif")
+
+    return data
+
 
 # =========================
 # REKAM MEDIS
