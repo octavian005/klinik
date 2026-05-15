@@ -70,6 +70,18 @@ class JadwalDokterResponse(JadwalDokterBase):
     class Config:
         from_attributes = True
 
+class JadwalDokterHariResponse(BaseModel):
+    id_jadwal: int
+    id_dokter: int
+    nama_dokter: str
+    spesialis: str
+    hari: str
+    jam_mulai: time
+    jam_selesai: time
+
+    class Config:
+        from_attributes = True
+
 
 # =====================
 # PENDAFTARAN

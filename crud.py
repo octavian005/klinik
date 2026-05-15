@@ -136,21 +136,32 @@ def create_jadwal_dokter(db: Session, jadwal: schemas.JadwalDokterCreate):
     return db_jadwal
 
 
-def get_jadwal_by_dokter(db: Session, id_dokter: int):
-    return db.query(models.JadwalDokter).filter(
-        models.JadwalDokter.id_dokter == id_dokter,
-        models.JadwalDokter.status == "Aktif"
-    ).all()
-
-
 def get_all_jadwal_dokter(db: Session):
     return db.query(models.JadwalDokter).all()
     
 
-def get_jadwal_by_hari(db: Session, hari: str):
+def get_jadwal_by_dokter(db: Session, id_dokter: int):
     return db.query(models.JadwalDokter).filter(
-        models.JadwalDokter.hari == hari
+        models.JadwalDokter.id_dokter == id_dokter
     ).all()
+
+
+# GET JADWAL BY HARI + JOIN DOKTER
+def get_jadwal_dokter_by_hari(db: Session, hari: str):
+    return (
+        db.query(
+            models.JadwalDokter.id_jadwal.label("id_jadwal"),
+            models.JadwalDokter.id_dokter.label("id_dokter"),
+            models.Dokter.nama_dokter.label("nama_dokter"),
+            models.Dokter.spesialis.label("spesialis"),
+            models.JadwalDokter.hari.label("hari"),
+            models.JadwalDokter.jam_mulai.label("jam_mulai"),
+            models.JadwalDokter.jam_selesai.label("jam_selesai"),
+        )
+        .join(models.Dokter, models.JadwalDokter.id_dokter == models.Dokter.id_dokter)
+        .filter(models.JadwalDokter.hari == hari)
+        .all()
+    )
 
 
 # =========================

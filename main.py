@@ -249,14 +249,17 @@ def get_all_jadwal_dokter(db: Session = Depends(get_db)):
     return crud.get_all_jadwal_dokter(db)
 
 
-@app.get("/dokter/{id_dokter}/jadwal", response_model=List[schemas.JadwalDokterResponse])
-def get_jadwal_by_dokter(id_dokter: int, db: Session = Depends(get_db)):
+@app.get("/jadwal-dokter/dokter/{id_dokter}", response_model=list[schemas.JadwalDokterResponse])
+def read_jadwal_by_dokter(id_dokter: int, db: Session = Depends(get_db)):
     return crud.get_jadwal_by_dokter(db, id_dokter)
     
 
-@app.get("/jadwal-dokter/hari/{hari}", response_model=List[schemas.JadwalDokterResponse])
-def get_jadwal_by_hari(hari: str, db: Session = Depends(get_db)):
-    return crud.get_jadwal_by_hari(db, hari)
+@app.get("/jadwal-dokter/hari/{hari}",response_model=list[schemas.JadwalDokterHariResponse])
+def get_jadwal_dokter_by_hari(
+    hari: str,
+    db: Session = Depends(get_db)
+):
+    return crud.get_jadwal_dokter_by_hari(db, hari)
 
 
 # =========================
