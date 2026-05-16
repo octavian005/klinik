@@ -36,8 +36,8 @@ def update_pasien(db: Session, id_pasien: int, pasien_update: schemas.PasienUpda
     if pasien_update.nama_pasien is not None:
         db_pasien.nama_pasien = pasien_update.nama_pasien
 
-    if pasien_update.password is not None:
-        db_pasien.password = pasien_update.password
+    if pasien_update.email is not None:
+        db_pasien.email = pasien_update.email
 
     if pasien_update.no_telp is not None:
         db_pasien.no_telp = pasien_update.no_telp
@@ -321,7 +321,7 @@ def update_obat(db: Session, id_obat: int, obat_update: schemas.ObatUpdate):
 
 
 def get_all_obat(db: Session):
-    return db.query(models.Obat).all()
+    return db.query(models.Obat).order_by(models.Obat.nama_obat.asc()).all()
 
 
 def get_obat_by_id(db: Session, id_obat: int):

@@ -28,7 +28,6 @@ class PasienResponse(PasienBase):
 class PasienUpdate(BaseModel):
     nama_pasien: Optional[str] = None
     email: Optional[str] = None
-    password: Optional[str] = None
     no_telp: Optional[str] = None
     alamat: Optional[str] = None
 

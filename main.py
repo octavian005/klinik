@@ -174,11 +174,13 @@ def login_pasien(email: str, password: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Email atau password pasien salah")
 
     return {
-        "message": "Login pasien berhasil",
-        "id_pasien": pasien.id_pasien,
-        "nama_pasien": pasien.nama_pasien,
-        "email": pasien.email
-    }
+    "message": "Login berhasil",
+    "id_pasien": pasien.id_pasien,
+    "nama_pasien": pasien.nama_pasien,
+    "email": pasien.email,
+    "no_telp": pasien.no_telp,
+    "alamat": pasien.alamat
+}
 
 @app.delete("/pasien/{id_pasien}")
 def delete_pasien(id_pasien: int, db: Session = Depends(get_db)):
@@ -388,6 +390,8 @@ def delete_obat(id_obat: int, db: Session = Depends(get_db)):
         "message": "Data obat berhasil dihapus",
         "id_obat": id_obat
     }
+
+
 
 
 # =========================
